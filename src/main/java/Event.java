@@ -13,6 +13,7 @@ public class Event extends Task {
         return "[E]";
     }
 
+
     @Override
     public String toString() {
         return super.toString() + " (from: " + from + " to: " + to + ")";

@@ -31,6 +31,7 @@ public class Task { // Move Task class outside to avoid inner-class issues
         System.out.println(line);
 
     }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
