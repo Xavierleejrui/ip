@@ -11,7 +11,6 @@ public class Deadline extends Task {
         return "[D]"; // "D" for Deadline
     }
 
-
     @Override
     public String toString() {
         return super.toString() + " (by: " + by + ")";

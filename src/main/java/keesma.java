@@ -133,7 +133,6 @@ public class keesma {
 
         }
         in.close();
-
         sayBye();
 
     }
