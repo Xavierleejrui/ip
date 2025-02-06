@@ -1,118 +1,140 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
-class Task { // Move Task class outside to avoid inner-class issues
-    protected String description;
-    protected boolean isDone;
-
-    public Task(String description) {
-        this.description = description;
-        this.isDone = false;
-    }
-
-    public void markAsDone() {
-        this.isDone = true;
-    }
-
-    public void markAsNotDone() {
-        this.isDone = false;
-    }
-
-    public String getStatusIcon() {
-        return (isDone ? "X" : " "); // "X" for done, " " for not done
-    }
-
-    @Override
-    public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
-    }
-}
 
 public class keesma {
-    public static boolean filterSentence(String sentence) {
-        return sentence.equalsIgnoreCase("Bye"); // Exit when "Bye" or "bye" is entered
+
+    private static final String line = "____________________________________________________________";
+    private static boolean isRunning = true;
+    private static List<Task> taskList = new ArrayList<>();
+
+    public static void sayHello() {
+        System.out.println(line);
+        System.out.println("Helloooo I'm Keesma, what can I do for you today babyboo");
+        System.out.println(line);
     }
 
-    public static void main(String[] args) {
-        String line = "____________________________________________________________";
-        String name = "Keesma";
-        String question = "What can I do for you?";
-        String greetings = "Helloooooo I'm " + name + "\n" + question;
-
+    public static void sayBye() {
         System.out.println(line);
-        System.out.println(greetings);
+        System.out.println("Bye, Hope to see you again soon, you smell great by the way, although you did smell better last night hehe ^ W ^ ");
         System.out.println(line);
+    }
 
-        Scanner in = new Scanner(System.in);
-        ArrayList<Task> list = new ArrayList<>(); // Store Task objects, not Strings
+    public static void handleBadCommand() {
+        System.out.println(line);
+        System.out.println("Eh bro can put a proper command anot smh");
+        System.out.println(line);
+    }
 
-        while (true) {
-            String response = in.nextLine().trim();
+    public static void addTask(String task) {
+        Task newTask = new Task(task);
+        newTask.printTaskAddition();
+        taskList.add(newTask);
+    }
 
-            if (filterSentence(response)) {
-                break; // Exit if "Bye" is entered
-            }
+    public static void addDeadline(String task) {
+        String[] stringParts = task.split(" /by ", 2);
+        String taskDescription = stringParts[0];
+        String dueDate = stringParts.length > 1 ? stringParts[1] : "";
 
-            if (response.equalsIgnoreCase("list")) {
-                if (list.isEmpty()) {
-                    System.out.println("No tasks yet.");
-                    System.out.println(line);
-                } else {
-                    System.out.println(line);
-                    System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < list.size(); i++) {
-                        System.out.println((i + 1) + ". " + list.get(i));
-                    }
-                    System.out.println(line);
-                }
-                continue;
-            }
+        Deadline newDeadline = new Deadline(taskDescription, dueDate);
+        newDeadline.printTaskAddition();
+        taskList.add(newDeadline);
+    }
 
-            if (response.startsWith("mark ")) {
-                try {
-                    int index = Integer.parseInt(response.substring(5)) - 1;
-                    if (index >= 0 && index < list.size()) {
-                        list.get(index).markAsDone();
-                        System.out.println(line);
-                        System.out.println("Nice! I've marked this task as done:");
-                        System.out.println("  " + list.get(index));
-                        System.out.println(line);
-                    } else {
-                        System.out.println("Invalid task number.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("Please enter a valid number.");
-                }
-                continue;
-            }
-
-            if (response.startsWith("unmark ")) {
-                try {
-                    int index = Integer.parseInt(response.substring(7)) - 1;
-                    if (index >= 0 && index < list.size()) {
-                        list.get(index).markAsNotDone();
-                        System.out.println(line);
-                        System.out.println("OK, I've marked this task as not done yet:");
-                        System.out.println("  " + list.get(index));
-                        System.out.println(line);
-                    } else {
-                        System.out.println("Invalid task number.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("Please enter a valid number.");
-                }
-                continue;
-            }
-
-            // Add new task
-            list.add(new Task(response));
-            System.out.println("Added: " + response);
+    public static void addEvent(String task) {
+        String[] stringParts = task.split(" /from ", 2);
+        if (stringParts.length < 2) {
             System.out.println(line);
+            System.out.println("Invalid event format! Use: event <description> /from <start time> /to <end time>");
+            System.out.println(line);
+            return;
         }
 
-        // Goodbye message
-        String goodbye = "Bye, Hope to see you again soon, you smell great by the way, although you did smell better last night hehe ^ W ^ ";
-        System.out.println(goodbye);
+        String taskDescription = stringParts[0];
+        String[] timeParts = stringParts[1].split(" /to ", 2);
+        String from = timeParts[0];
+        String to = (timeParts.length > 1) ? timeParts[1] : "";
+
+        Event newEvent = new Event(taskDescription, from, to);
+        newEvent.printTaskAddition();
+        taskList.add(newEvent);
+    }
+
+    public static void printTaskList() {
+        System.out.println(line);
+        System.out.println("You have " + taskList.size() + " tasks:");
+        for (int i = 0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            System.out.println("\t" + (i + 1) + ". " + task.getTaskType() + " " + task.toString());
+        }
         System.out.println(line);
     }
+
+    public static void markTask(int taskId) {
+
+        Task task = taskList.get(taskId - 1);
+        task.markAsDone();
+        System.out.println(line);
+        System.out.println("Your task has been marked as done babyboo");
+        System.out.println(task.toString());
+        System.out.println(line);
+    }
+
+    public static void unmarkTask(int taskId) {
+        Task task = taskList.get(taskId - 1);
+        task.markAsNotDone();
+        System.out.println(line);
+        System.out.println("Your task has been unmarked gugu");
+        System.out.println(task.toString());
+        System.out.println(line);
+    }
+
+
+    public static void main(String[] args) {
+
+        Scanner in = new Scanner(System.in);
+        sayHello();
+
+        while (isRunning) {
+            System.out.println("Please enter a command");
+            String input = in.nextLine().trim();
+            String[] stringParts = input.split(" ", 2);
+            String command = stringParts[0];
+            String entryRemainder = stringParts.length > 1 ? stringParts[1] : "";
+
+            switch (command.toLowerCase()) {
+            case "list":
+                printTaskList();
+                break;
+            case "todo":
+                addTask(entryRemainder);
+                break;
+            case "deadline":
+                addDeadline(entryRemainder);
+                break;
+            case "event":
+                addEvent(entryRemainder);
+                break;
+            case "mark":
+                int markTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
+                markTask(markTaskId);
+                break;
+            case "unmark":
+                int unmarkTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
+                unmarkTask(unmarkTaskId);
+                break;
+            case "bye":
+                isRunning = false;
+                break;
+            default:
+                handleBadCommand();
+            }
+
+
+        }
+        in.close();
+        sayBye();
+
+    }
 }
+
