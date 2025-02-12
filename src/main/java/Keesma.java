@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Keesma {
@@ -27,37 +25,23 @@ public class Keesma {
         System.out.println(line);
     }
 
-    public static void addTask(String task) throws KeesmaException {
-        if (task.isBlank()) {
-            throw new KeesmaException("Can you type something lol thanks bro");
-        }
+    public static void addTask(String task) {
         Task newTask = new Task(task);
         newTask.printTaskAddition();
         taskList.add(newTask);
     }
 
-    public static void addDeadline(String task) throws KeesmaException {
-        if (!task.contains(" /by ")) {
-            throw new KeesmaException("Can you type the format properly lol thanks bro");
-        }
+    public static void addDeadline(String task) {
         String[] stringParts = task.split(" /by ", 2);
         String taskDescription = stringParts[0];
         String dueDate = stringParts.length > 1 ? stringParts[1] : "";
-
-        if (taskDescription.isBlank() || dueDate.isBlank()) {
-            throw new KeesmaException("Can you type the format properly lol thanks bro make sure you add description and date.");
-        }
 
         Deadline newDeadline = new Deadline(taskDescription, dueDate);
         newDeadline.printTaskAddition();
         taskList.add(newDeadline);
     }
 
-    public static void addEvent(String task) throws KeesmaException {
-        if (!task.contains(" /from ") || !task.contains(" /to ")) {
-            throw new KeesmaException("Can you type the format properly lol thanks bro");
-        }
-
+    public static void addEvent(String task) {
         String[] stringParts = task.split(" /from ", 2);
         if (stringParts.length < 2) {
             System.out.println(line);
@@ -86,10 +70,7 @@ public class Keesma {
         System.out.println(line);
     }
 
-    public static void markTask(int taskId) throws KeesmaException {
-        if (taskId <= 0 || taskId > taskList.size()) {
-            throw new KeesmaException("Can type your task number properly :') ");
-        }
+    public static void markTask(int taskId) {
 
         Task task = taskList.get(taskId - 1);
         task.markAsDone();
@@ -110,57 +91,50 @@ public class Keesma {
 
 
     public static void main(String[] args) {
+
         Scanner in = new Scanner(System.in);
         sayHello();
 
         while (isRunning) {
-            try {
-                System.out.println("Please enter a command");
-                String input = in.nextLine().trim();
-                String[] stringParts = input.split(" ", 2);
-                String command = stringParts[0];
-                String entryRemainder = stringParts.length > 1 ? stringParts[1] : "";
+            System.out.println("Please enter a command");
+            String input = in.nextLine().trim();
+            String[] stringParts = input.split(" ", 2);
+            String command = stringParts[0];
+            String entryRemainder = stringParts.length > 1 ? stringParts[1] : "";
 
-                switch (command.toLowerCase()) {
-                case "list":
-                    printTaskList();
-                    break;
-                case "todo":
-                    addTask(entryRemainder);
-                    break;
-                case "deadline":
-                    addDeadline(entryRemainder);
-                    break;
-                case "event":
-                    addEvent(entryRemainder);
-                    break;
-                case "mark":
-                    int markTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
-                    markTask(markTaskId);
-                    break;
-                case "unmark":
-                    int unmarkTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
-                    unmarkTask(unmarkTaskId);
-                    break;
-                case "bye":
-                    isRunning = false;
-                    break;
-                default:
-                    handleBadCommand();
-                }
-            } catch (KeesmaException e) {
-                System.out.println(line);
-                System.out.println(e.getMessage());
-                System.out.println(line);
-            } catch (NumberFormatException e) {
-                System.out.println(line);
-                System.out.println("Bruh can you type a valid number? Thanks bro.");
-                System.out.println(line);
+            switch (command.toLowerCase()) {
+            case "list":
+                printTaskList();
+                break;
+            case "todo":
+                addTask(entryRemainder);
+                break;
+            case "deadline":
+                addDeadline(entryRemainder);
+                break;
+            case "event":
+                addEvent(entryRemainder);
+                break;
+            case "mark":
+                int markTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
+                markTask(markTaskId);
+                break;
+            case "unmark":
+                int unmarkTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
+                unmarkTask(unmarkTaskId);
+                break;
+            case "bye":
+                isRunning = false;
+                break;
+            default:
+                handleBadCommand();
             }
-        }
 
+
+        }
         in.close();
         sayBye();
+
     }
 }
 
