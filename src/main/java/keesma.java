@@ -1,5 +1,6 @@
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class keesma {
 
@@ -89,7 +90,6 @@ public class keesma {
         System.out.println(line);
     }
 
-
     public static void main(String[] args) {
 
         Scanner in = new Scanner(System.in);
@@ -134,7 +134,6 @@ public class keesma {
         }
         in.close();
         sayBye();
-
     }
 }
 
