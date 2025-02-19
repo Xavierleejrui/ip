@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class Keesma {
 
     private static final String line = "____________________________________________________________";
@@ -31,9 +32,10 @@ public class Keesma {
         if (task.isBlank()) {
             throw new KeesmaException("Can you type something lol thanks bro");
         }
-        Task newTask = new Task(task);
+        Task newTask = new TodoTask(task, false); // ✅ Use TodoTask instead
         newTask.printTaskAddition();
         taskList.add(newTask);
+        Storage.saveTasks(taskList); // Save tasks after adding
     }
 
     public static void addDeadline(String task) throws KeesmaException {
@@ -48,9 +50,10 @@ public class Keesma {
             throw new KeesmaException("Can you type the format properly lol thanks bro make sure you add description and date.");
         }
 
-        Deadline newDeadline = new Deadline(taskDescription, dueDate);
+        Deadline newDeadline = new Deadline(taskDescription, false, dueDate); // ✅ Pass false for isDone
         newDeadline.printTaskAddition();
         taskList.add(newDeadline);
+        Storage.saveTasks(taskList); // Save tasks after adding
     }
 
     public static void addEvent(String task) throws KeesmaException {
@@ -71,9 +74,10 @@ public class Keesma {
         String from = timeParts[0];
         String to = (timeParts.length > 1) ? timeParts[1] : "";
 
-        Event newEvent = new Event(taskDescription, from, to);
+        Event newEvent = new Event(taskDescription, false, from, to); // ✅ Pass false for isDone
         newEvent.printTaskAddition();
         taskList.add(newEvent);
+        Storage.saveTasks(taskList); // Save tasks after adding
     }
 
     public static void printTaskList() {
@@ -111,6 +115,7 @@ public class Keesma {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
+        taskList = Storage.loadTasks(); // Load tasks from file at startup
         sayHello();
 
         while (isRunning) {
