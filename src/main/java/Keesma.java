@@ -76,6 +76,19 @@ public class Keesma {
         taskList.add(newEvent);
     }
 
+    public static void deleteTask(int taskId) throws KeesmaException {
+        if (taskId <= 0 || taskId > taskList.size()) {
+            throw new KeesmaException("Can you type your task number properly lol thanks bro");
+        }
+
+        Task removeTask = taskList.remove(taskId - 1);
+        System.out.println(line);
+        System.out.println("Yes boss I have removed this task for you.");
+        System.out.println("\t" + removeTask.toString());
+        System.out.println("Now there are " + taskList.size() + " tasks in the list");
+        System.out.println(line);
+    }
+
     public static void printTaskList() {
         System.out.println(line);
         System.out.println("You have " + taskList.size() + " tasks:");
@@ -141,6 +154,10 @@ public class Keesma {
                 case "unmark":
                     int unmarkTaskId = stringParts.length > 1 ? Integer.parseInt(stringParts[1]) : 0;
                     unmarkTask(unmarkTaskId);
+                    break;
+                case "delete":
+                    int deleteTaskId = Integer.parseInt(entryRemainder);
+                    deleteTask(deleteTaskId);
                     break;
                 case "bye":
                     isRunning = false;
