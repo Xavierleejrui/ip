@@ -1,76 +1,82 @@
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Storage {
-    private static final String FILE_PATH = "data/keesma.txt"; // Relative path
-    private static final String DIRECTORY_PATH = "data/";
+    private final String filePath;
 
-    public static List<Task> loadTasks() {
-        List<Task> tasks = new ArrayList<>();
-        File file = new File(FILE_PATH);
-
-        if (!file.exists()) {
-            System.out.println("No saved tasks found. Creating a new task list.");
-            return tasks; // Return empty list
+    public Storage(String filePath) {
+        this.filePath = filePath;
+        // Create directories if they don't exist
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
         }
+    }
 
-        try (Scanner scanner = new Scanner(file)) {
+    public List<Task> loadTasks() throws KeesmaException {
+        List<Task> tasks = new ArrayList<>();
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return tasks; // Return empty list if file doesn't exist yet
+            }
+
+            Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
-                String taskString = scanner.nextLine();
-                Task task = parseTask(taskString);
+                String line = scanner.nextLine();
+                Task task = parseTaskFromStorage(line);
                 if (task != null) {
                     tasks.add(task);
                 }
             }
+            scanner.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Error loading tasks: " + e.getMessage());
+            throw new KeesmaException("Cannot find file at: " + filePath);
+        } catch (Exception e) {
+            throw new KeesmaException("Error loading tasks: " + e.getMessage());
         }
-
         return tasks;
     }
 
-    public static void saveTasks(List<Task> tasks) {
+    public void saveTasks(List<Task> tasks) throws KeesmaException {
         try {
-            // Ensure the directory exists
-            Files.createDirectories(Paths.get(DIRECTORY_PATH));
-
-            FileWriter writer = new FileWriter(FILE_PATH);
+            FileWriter writer = new FileWriter(filePath);
             for (Task task : tasks) {
                 writer.write(task.toFileString() + System.lineSeparator());
             }
             writer.close();
         } catch (IOException e) {
-            System.out.println("Error saving tasks: " + e.getMessage());
+            throw new KeesmaException("Error saving tasks: " + e.getMessage());
         }
     }
 
-    private static Task parseTask(String taskString) {
-        String[] parts = taskString.split(" \\| ");
-        if (parts.length < 3) return null;
+    private Task parseTaskFromStorage(String line) {
+        String[] parts = line.split(" \\| ");
+        if (parts.length < 3) {
+            return null;
+        }
 
         String type = parts[0];
-        boolean isDone = parts[1].equals("1");
+        boolean isDone = "1".equals(parts[1]);
         String description = parts[2];
 
-        try {
-            switch (type) {
-            case "T":
-                return new TodoTask(description, isDone);
-            case "D":
-                if (parts.length < 4) return null; // Prevent errors
-                return new Deadline(description, isDone, parts[3]);
-            case "E":
-                if (parts.length < 5) return null; // Prevent errors
-                return new Event(description, isDone, parts[3], parts[4]);
-            default:
-                return null;
-            }
-        } catch (Exception e) {
-            System.out.println("Error parsing task: " + taskString);
+        switch (type) {
+        case "T":
+            return new TodoTask(description, isDone);
+        case "D":
+            String by = parts.length > 3 ? parts[3] : "";
+            return new Deadline(description, isDone, by);
+        case "E":
+            String from = parts.length > 3 ? parts[3] : "";
+            String to = parts.length > 4 ? parts[4] : "";
+            return new Event(description, isDone, from, to);
+        default:
             return null;
         }
     }
