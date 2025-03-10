@@ -8,7 +8,7 @@ Keesma is a quirky and personality-filled task management application that runs 
 ## Quick Start
 
 1. Ensure you have Java 17 installed
-2. Download the latest `Keesma.jar` from the [releases page](https://github.com/Xavierleejrui/ip/releases)
+2. Download the latest `ip.jar` from the [releases page](https://github.com/Xavierleejrui/ip/releases)
 3. Run the application using: `java -jar ip.jar`
 
 ## Features
