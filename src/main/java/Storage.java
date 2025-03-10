@@ -2,13 +2,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Storage class to handle file operations.
+ * Responsible for saving and loading tasks from persistent storage.
+ * This class manages the serialization and deserialization of Task objects
+ * to and from a text file.
+ */
 public class Storage {
     private final String filePath;
 
+    /**
+     * Constructs a Storage object with the specified file path.
+     * Creates any necessary parent directories if they don't exist.
+     *
+     * @param filePath The path to the storage file
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
         // Create directories if they don't exist
@@ -19,6 +33,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Loads tasks from the storage file.
+     * Reads each line from the file and parses it into a Task object.
+     *
+     * @return A list of tasks loaded from the file
+     * @throws KeesmaException If there's an error reading the file or parsing its contents
+     */
     public List<Task> loadTasks() throws KeesmaException {
         List<Task> tasks = new ArrayList<>();
         try {
@@ -44,6 +65,13 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the list of tasks to the storage file.
+     * Each task is converted to a string representation and written to the file.
+     *
+     * @param tasks The list of tasks to save
+     * @throws KeesmaException If there's an error writing to the file
+     */
     public void saveTasks(List<Task> tasks) throws KeesmaException {
         try {
             FileWriter writer = new FileWriter(filePath);
@@ -56,6 +84,16 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses a line from the storage file into a Task object.
+     * The format of each line is determined by the task type:
+     * - Todo: "T | isDone | description"
+     * - Deadline: "D | isDone | description | by"
+     * - Event: "E | isDone | description | from | to"
+     *
+     * @param line The line to parse from the storage file
+     * @return The parsed Task object, or null if the line couldn't be parsed
+     */
     private Task parseTaskFromStorage(String line) {
         String[] parts = line.split(" \\| ");
         if (parts.length < 3) {
