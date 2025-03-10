@@ -1,2 +1,2 @@
-T | 0 | 2113
-E | 1 | 2113 class | 1pm | 2pm
+E | 0 | 2113 class | 1pm | 2pm
+D | 0 | 2027 assignment | Saturday 11.59pm
